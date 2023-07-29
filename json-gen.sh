@@ -83,17 +83,19 @@ else
 	outdir="../out/target/product/$codename"
 	zip_file="$outdir/$file_name"
 	file_size=$(stat -c%s $zip_file)
+	build_date="$(date +'%d-%m-%Y')"
 	datetime=$(date -u +%s)
 	id=$(sha256sum $zip_file | awk '{ print $1 }')
 	romtype="COMMUNITY"
 	if [ ! -f "device/$codename.json" ]; then
 		touch device/$codename.json
 	fi
-		echo "
+	echo "
 		{
 		  "response": [
 		    {
 		      "datetime":$datetime,
+		      "build_date": $build_date
 		      "filename": "$file_name",
 		      "id": "$id",
 		      "romtype": "$romtype",

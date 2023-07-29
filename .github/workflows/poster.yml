@@ -1,0 +1,24 @@
+name: Telegram poster
+
+on:
+  workflow_dispatch:
+    inputs:
+      device:
+          description: 'Put a device codename'
+          required: true
+
+env:
+  TELEGRAM_TOKEN: ${{ secrets.TG_TOKEN }}
+  TELEGRAM_CHAT: ${{ secrets.TG_CHAT }}
+  DEVICE: ${{ github.event.inputs.device }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: hoppless/ubuntu:22.04
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - name: Start post build
+        run: |
+             bash post.sh $DEVICE
