@@ -8,8 +8,8 @@ on:
           required: true
 
 env:
-  TELEGRAM_TOKEN: ${{ secrets.TG_TOKEN }}
-  TELEGRAM_CHAT: ${{ secrets.TG_CHAT }}
+  TG_TOKEN: ${{ secrets.TG_TOKEN }}
+  TG_CHAT: ${{ secrets.TG_CHAT }}
   DEVICE: ${{ github.event.inputs.device }}
 
 jobs:

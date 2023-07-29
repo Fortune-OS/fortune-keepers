@@ -8,15 +8,14 @@
 set -e
 
 # Telegram setup
-git clone --depth=1 https://github.com/Hopireika/telegram.sh Telegram
-TELEGRAM="$(pwd)/Telegram/telegram"
+export BOT_MSG_URL="https://api.telegram.org/bot$TG_TOKEN/sendMessage"
+
 send_message() {
-	"${TELEGRAM}" -H -D \
-		"$(
-			for POST in "${@}"; do
-				echo "${POST}"
-			done
-		)"
+	curl -s -X POST "$BOT_MSG_URL" -d chat_id="$TG_CHAT" \
+		-d "disable_web_page_preview=true" \
+		-d "parse_mode=html" \
+		-d text="$1"
+
 }
 
 device="$1"
