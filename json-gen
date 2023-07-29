@@ -29,7 +29,6 @@ err() {
 }
 
 END_OF_OPT=
-POSITIONAL=()
 while [[ $# -gt 0 ]]; do
 	case "${END_OF_OPT}${1}" in
 	-d | --device)
@@ -75,36 +74,37 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-set -- "${POSITIONAL[@]}"
-
 if [[ -z "$device" || -z "$codename" || -z "$file_name" || -z "$maintainer" ]]; then
 	err "Error: Missing arguments. Please specify all options -d, -d, -f, and -m."
-else
-	outdir="../out/target/product/$codename"
-	zip_file="$outdir/$file_name"
-	file_size=$(stat -c%s $zip_file)
-	build_date="$(date +'%d-%m-%Y')"
-	datetime=$(date -u +%s)
-	id=$(sha256sum $zip_file | awk '{ print $1 }')
-	romtype="COMMUNITY"
-	if [ ! -f "device/$codename.json" ]; then
-		touch device/$codename.json
-	fi
+fi
+outdir="../out/target/product/$codename"
+zip_file="$outdir/$file_name"
+file_size=$(stat -c%s $zip_file)
+build_date="$(date +'%d-%m-%Y')"
+datetime=$(date -u +%s)
+id=$(sha256sum $zip_file | awk '{ print $1 }')
+romtype="COMMUNITY"
+link="https://master.dl.sourceforge.net/project/fortuneos/$codename/$file_name"
+version="13.0"
+if [ ! -f "device/$codename.json" ]; then
+	touch device/$codename.json
+fi
+echo "[•] Generate json for $device"
 echo "{
-  "response": [
+  \"response\": [
     {
-      "datetime": "$datetime"
-      "build_date": "$build_date"
-      "filename": "$file_name",
-      "id": "$id",
-      "romtype": "$romtype",
-      "size": "$file_size",
-      "url": "https://master.dl.sourceforge.net/project/fortuneos/$codename/$file_name",
-      "version": "13.0",
-      "device_name": "$device",
-      "device_codenane": "$codename",
-      "maintainer": "$maintainer"
+      \"datetime\": $datetime,
+      \"build_date\": $build_date,
+      \"filename\": \"$file_name\",
+      \"id\": \"$id\",
+      \"romtype\": \"$romtype\",
+      \"size\": $file_size,
+      \"url\": \"$link\",
+      \"version\": \"$version\",
+      \"device_name\": \"$device\",
+      \"device_codenane\": \"$codename\",
+      \"maintainer\": \"$maintainer\"
     }
   ]
 }" >device/$codename.json
-fi
+echo "[✓] Done"
