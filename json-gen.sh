@@ -107,5 +107,5 @@ else
 		      "maintainer": "$maintainer"
 		    }
 		  ]
-		}" >~/official-keepers/device/$codename.json
+		}" > device/$codename.json
 fi
