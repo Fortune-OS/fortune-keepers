@@ -90,22 +90,21 @@ else
 	if [ ! -f "device/$codename.json" ]; then
 		touch device/$codename.json
 	fi
-	echo "
-		{
-		  "response": [
-		    {
-		      "datetime":$datetime,
-		      "build_date": $build_date
-		      "filename": "$file_name",
-		      "id": "$id",
-		      "romtype": "$romtype",
-		      "size":$file_size,
-		      "url": "https://master.dl.sourceforge.net/project/fortuneos/$codename/$file_name",
-		      "version": "13.0",
-		      "device_name": "$device",
-		      "device_codename" : "$codename",
-		      "maintainer": "$maintainer"
-		    }
-		  ]
-		}" > device/$codename.json
+echo "{
+  "response": [
+    {
+      "datetime": "$datetime"
+      "build_date": "$build_date"
+      "filename": "$file_name",
+      "id": "$id",
+      "romtype": "$romtype",
+      "size": "$file_size",
+      "url": "https://master.dl.sourceforge.net/project/fortuneos/$codename/$file_name",
+      "version": "13.0",
+      "device_name": "$device",
+      "device_codenane": "$codename",
+      "maintainer": "$maintainer"
+    }
+  ]
+}" >device/$codename.json
 fi
