@@ -15,36 +15,32 @@ send_message() {
 		-d "disable_web_page_preview=true" \
 		-d "parse_mode=html" \
 		-d text="$1"
-
 }
 
 device="$1"
-model="$(curl -s "https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$device.json" | jq -r '.response[].device_name')"
-filename="$(curl -s "https://raw.githubusercontent.com/FortuneOS/official-keepers/13.0/device/$device.json" | jq '.filename')"
+curl -s https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$device.json >$device.json
+device_name=$(grep -o '"device_name": "[^"]*' $device.json | grep -o '[^"]*$')
+filename=$(grep -o '"filename": "[^"]*' $device.json | grep -o '[^"]*$')
 link="https://www.pling.com/p/2066862"
-current_date="$(date +'%d-%m-%Y')"
-build_date="$(curl -s "https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$device.json" | jq -r '.response[].build_date')"
-sha256sum="$(curl -s "https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$device.json" | jq -r '.response[].id')"
-maintainer="$(curl -s "https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$device.json" | jq -r '.response[].maintainer')"
-version="$(curl -s "https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$device.json" | jq -r '.response[].version')"
-romtype="$(curl -s "https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$device.json" | jq -r '.response[].romtype')"
+build_date=$(grep -o '"build_date": [^,]*' $device.json | grep -o '[0-9]*-[0-9]*-[0-9]*')
+sha256sum=$(grep -o '"id": "[^"]*' $device.json | grep -o '[^"]*$')
+maintainer=$(grep -o '"maintainer": "[^"]*' $device.json | grep -o '[^"]*$')
+version=$(grep -o '"version": "[^"]*' $device.json | grep -o '[^"]*$')
+romtype=$(grep -o '"romtype": "[^"]*' $device.json | grep -o '[^"]*$')
 
-if [ "$current_date" != "$build_date" ]; then
-	echo "Build date is not the same as the one in the json or the build has already been posted!"
-	exit 0
-else
+send_message "
+New FortuneOS build available!
+<b>By</b> : <b>$maintainer</b>
 
-	send_message "
-	New build available for <b>"$model"</b> codename <b>"$device"</b>!
-	By: <b>'$maintainer'</b>
+<b>Build date</b> : <code>$build_date</code>
+<b>Device name</b> : <code>$device_name</code>
+<b>Version</b> : <code>$version</code>
+<b>File name</b> : <code>$filename</code>
+<b>Buldtype</b> : <code>$romtype</code>
+<b>SHA256</b> : <code>$sha256sum</code>
 
-	<b> Build date </b> : <code>'$build_date'</code>
-	<b> Version </b> : <code>'$version'</code>
-	<b> File name </b> : <code>'$filename'</code>
-	<b> Buldtype </b> : <code>'$romtype'</code>
-	<b> SHA256 </b> : <code>'$sha256sum'</code>
+<b>Download</b> : <a href='$link'>Here!</a>
 
-	<b>Download </b> : <a href='$link'>Here!</a>
+#fortune #letsfortune #keepfortune #$device"
 
-	#letsfortune #keepfortune #$device"
-fi
+rm $device.json
