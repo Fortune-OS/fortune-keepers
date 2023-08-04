@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
 			device="$2"
 			shift 2
 		else
-			err "Error: Argument for $1 is missing or more/less than 1 argument"
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
 		fi
 		;;
 	-c | --codename)
@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]]; do
 			codename="$2"
 			shift 2
 		else
-			err "Error: Argument for $1 is missing or more/less than 1 argument"
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
 		fi
 		;;
 	-f | --filename)
@@ -52,7 +52,7 @@ while [[ $# -gt 0 ]]; do
 			file_name="$2"
 			shift 2
 		else
-			err "Error: Argument for $1 is missing or more/less than 1 argument"
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
 		fi
 		;;
 	-m | --maintainer)
@@ -60,7 +60,7 @@ while [[ $# -gt 0 ]]; do
 			maintainer="$2"
 			shift 2
 		else
-			err "Error: Argument for $1 is missing or more/less than 1 argument"
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
 		fi
 		;;
 	-h | --help)
@@ -68,33 +68,31 @@ while [[ $# -gt 0 ]]; do
 		exit 0
 		;;
 	*)
-		echo "Invalid argument passed: '${arg}' Run '$0 --help' to view available options."
+		echo "[x] Invalid argument passed: '${arg}' Run '$0 --help' to view available options."
 		exit 1
 		;;
 	esac
 done
 
 if [[ -z "$device" || -z "$codename" || -z "$file_name" || -z "$maintainer" ]]; then
-	err "Error: Missing arguments. Please specify all options -d, -d, -f, and -m."
+	err "[x] Error: Missing arguments. Please specify all options -d, -d, -f, and -m."
 fi
 outdir="../out/target/product/$codename"
 zip_file="$outdir/$file_name"
 file_size=$(stat -c%s $zip_file)
 build_date="$(date +'%d-%m-%Y')"
-datetime=$(date -u +%s)
+timestamp=$(cat $outdir/system/build.prop | grep ro.build.date.utc | cut -d'=' -f2)
 id=$(sha256sum $zip_file | awk '{ print $1 }')
 romtype="COMMUNITY"
 link="https://master.dl.sourceforge.net/project/fortuneos/$codename/$file_name"
 version="13.0"
-if [ ! -f "device/$codename.json" ]; then
-	touch device/$codename.json
-fi
-echo "[•] Generate json for $device"
-echo "{
+if [ ! -f device/$codename.json ]; then
+  echo "[x] No json file found, creating one"
+  echo "[•] Creating json file for $device"
+  echo "{
   \"response\": [
     {
-      \"datetime\": $datetime,
-      \"build_date\": $build_date,
+      \"datetime\": $timestamp,
       \"filename\": \"$file_name\",
       \"id\": \"$id\",
       \"romtype\": \"$romtype\",
@@ -102,9 +100,40 @@ echo "{
       \"url\": \"$link\",
       \"version\": \"$version\",
       \"device_name\": \"$device\",
-      \"device_codenane\": \"$codename\",
       \"maintainer\": \"$maintainer\"
     }
   ]
 }" >device/$codename.json
-echo "[✓] Done"
+  echo "[✓] Done"
+else
+  echo "Editing json file"
+  # date time
+  timestamp_old=$(cat device/$codename.json | grep "datetime" | cut -d':' -f2 | cut -d',' -f1)
+  $(sed -i "s|$timestamp_old|$timestamp|g" device/$codename.json)
+
+  # file name
+  file_name_old=$(cat device/$codename.json | grep "filename" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$file_name_old|$file_name|g" device/$codename.json)
+
+  # id
+  id=$(sha256sum $zip_path | cut -d' ' -f1)
+  id_old=$(cat device/$codename.json | grep "id" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$id_old|$id|g" device/$codename.json)
+
+  # Rom type
+  romtype_old=$(cat device/$codename.json | grep "romtype" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$romtype_old|$romtype|g" device/$codename.json)
+
+  # Rom size
+  size_old=$(cat device/$codename.json | grep "size" | cut -d':' -f2 | cut -d',' -f1)
+  $(sed -i "s|$size_old|$file_size|g" device/$codename.json)
+
+  # Rom version
+  version_old=$(cat device/$codename.json | grep "version" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$version_old|$version|g" device/$codename.json)
+
+  # url
+  link_old=$(cat device/$codename.json | grep https | cut -d '"' -f4)
+  $(sed -i "s|$link_old|$link|g" device/$codename.json)
+  echo "[✓] Done"
+fi
