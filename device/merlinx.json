@@ -1,13 +1,13 @@
 {
   "response": [
     {
-      "datetime": 1690661659,
-      "build_date": 30-07-2023,
-      "filename": "FortuneOS-Texas-merlinx-COMMUNITY-20230729-1854.zip",
-      "id": "f9fb6afcbaa5b2dbf3fd1e39b733a8df2557528f8b700974d84bb0ebf91f01db",
+      "datetime": 1691153862,
+      "build_date": 04-08-2023,
+      "filename": "FortuneOS-Texas-merlinx-COMMUNITY-20230804-1134.zip",
+      "id": "380697bfb19ddfa86e52eddc006dfcfbfacfce3244f936c7507f64229f1d4748",
       "romtype": "COMMUNITY",
-      "size": 1513925927,
-      "url": "https://master.dl.sourceforge.net/project/fortuneos/merlinx/FortuneOS-Texas-merlinx-COMMUNITY-20230729-1854.zip",
+      "size": 1511599694,
+      "url": "https://master.dl.sourceforge.net/project/fortuneos/merlinx/FortuneOS-Texas-merlinx-COMMUNITY-20230804-1134.zip",
       "version": "13.0",
       "device_name": "Redmi Note 9",
       "device_codenane": "merlinx",
