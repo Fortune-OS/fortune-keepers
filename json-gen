@@ -84,7 +84,10 @@ build_date="$(date +'%d-%m-%Y')"
 timestamp=$(cat $outdir/system/build.prop | grep ro.build.date.utc | cut -d'=' -f2)
 id=$(sha256sum $zip_file | awk '{ print $1 }')
 romtype="COMMUNITY"
-link="https://master.dl.sourceforge.net/project/fortuneos/$codename/$file_name"
+org="Fortune-OS"
+rel_repo="official-keepers"
+rel_tag="$(date "+%d%m%Y")"
+rel_link="https://github.com/$org/$rel_repo/releases/download/$rel_tag/$file_name"
 version="13.0"
 if [ ! -f device/$codename.json ]; then
   echo "[x] No json file found, creating one"
@@ -97,7 +100,7 @@ if [ ! -f device/$codename.json ]; then
       \"id\": \"$id\",
       \"romtype\": \"$romtype\",
       \"size\": $file_size,
-      \"url\": \"$link\",
+      \"url\": \"$rel_link\",
       \"version\": \"$version\",
       \"device_name\": \"$device\",
       \"maintainer\": \"$maintainer\"
@@ -134,6 +137,6 @@ else
 
   # url
   link_old=$(cat device/$codename.json | grep https | cut -d '"' -f4)
-  $(sed -i "s|$link_old|$link|g" device/$codename.json)
+  $(sed -i "s|$link_old|$rel_link|g" device/$codename.json)
   echo "[✓] Done"
 fi
