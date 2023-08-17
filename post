@@ -28,6 +28,7 @@ wget https://raw.githubusercontent.com/Fortune-OS/official-keepers/13.0/device/$
 device_name=$(grep -o '"device_name": "[^"]*' $device.json | grep -o '[^"]*$')
 filename=$(grep -o '"filename": "[^"]*' $device.json | grep -o '[^"]*$')
 link="https://www.pling.com/p/2066862"
+clog="https://github.com/Fortune-OS/changelogs/blob/13.0/$device.md"
 build_date=$(date "+%d%m%Y")
 sha256sum=$(grep -o '"id": "[^"]*' $device.json | grep -o '[^"]*$')
 maintainer=$(grep -o '"maintainer": "[^"]*' $device.json | grep -o '[^"]*$')
@@ -46,6 +47,7 @@ New build available for <b>$device</b>!
 <b>SHA256:</b> <code>$sha256sum</code>
 
 <b>Download:</b> <a href='$link'>Here!</a>
+<b>Changelogs:</b> <a href='$clog'>Here!</a>
 
 #fortune #letsfortune #keepfortune #$device"
 
