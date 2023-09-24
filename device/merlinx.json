@@ -1,12 +1,12 @@
 {
   "response": [
     {
-      "datetime":1695193027,
-      "filename": "FortuneOS-Texas-merlinx-COMMUNITY-20230920-0659.zip",
+      "datetime":1695563394,
+      "filename": "FortuneOS-Texas-merlinx-COMMUNITY-20230924-1352.zip",
       "id": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "romtype": "COMMUNITY",
-      "size":1511630073,
-      "url": "https://github.com/Fortune-OS/official-keepers/releases/download/20092023/FortuneOS-Texas-merlinx-COMMUNITY-20230920-0659.zip",
+      "size":1522997040,
+      "url": "https://github.com/Fortune-OS/official-keepers/releases/download/24092023/FortuneOS-Texas-merlinx-COMMUNITY-20230924-1352.zip",
       "version": "13.0",
       "device_name": "Redmi Note 9",
       "maintainer": "Kizziama"
