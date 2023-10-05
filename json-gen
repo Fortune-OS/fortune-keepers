@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+#
+# Copyright (C) 2023 FortuneOS
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+set -e
+
+helpmenu() {
+	echo -e "
+*** A Simple bash script to create ota json ***
+Usage :
+      $0 [args]
+Arguments :
+ -d 	--device	: Set device name
+
+ -c     --codename	: Set device codename
+
+ -f     --filename	: Set OTA file name
+
+ -m     --maintainer	: Set maintainer name"
+}
+
+# Function to display an error message and exit
+err() {
+	echo "Error: $1" >&2
+	exit 1
+}
+
+END_OF_OPT=
+while [[ $# -gt 0 ]]; do
+	case "${END_OF_OPT}${1}" in
+	-d | --device)
+		if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+			device="$2"
+			shift 2
+		else
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
+		fi
+		;;
+	-c | --codename)
+		if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+			codename="$2"
+			shift 2
+		else
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
+		fi
+		;;
+	-f | --filename)
+		if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+			file_name="$2"
+			shift 2
+		else
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
+		fi
+		;;
+	-m | --maintainer)
+		if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+			maintainer="$2"
+			shift 2
+		else
+			err "[x] Error: Argument for $1 is missing or more/less than 1 argument"
+		fi
+		;;
+	-h | --help)
+		helpmenu
+		exit 0
+		;;
+	*)
+		echo "[x] Invalid argument passed: '${arg}' Run '$0 --help' to view available options."
+		exit 1
+		;;
+	esac
+done
+
+if [[ -z "$device" || -z "$codename" || -z "$file_name" || -z "$maintainer" ]]; then
+	err "[x] Error: Missing arguments. Please specify all options -d, -d, -f, and -m."
+fi
+outdir="../out/target/product/$codename"
+zip_file="$outdir/$file_name"
+file_size=$(stat -c%s $zip_file)
+build_date="$(date +'%d-%m-%Y')"
+timestamp=$(cat $outdir/system/build.prop | grep ro.build.date.utc | cut -d'=' -f2)
+id=$(sha256sum $zip_file | awk '{ print $1 }')
+romtype="COMMUNITY"
+org="Fortune-OS"
+rel_repo="official-keepers"
+rel_tag="$(date "+%d%m%Y")"
+rel_link="https://github.com/$org/$rel_repo/releases/download/$rel_tag/$file_name"
+version="13.0"
+if [ ! -f device/$codename.json ]; then
+  echo "[x] No json file found, creating one"
+  echo "[•] Creating json file for $device"
+  echo "{
+  \"response\": [
+    {
+      \"datetime\": $timestamp,
+      \"filename\": \"$file_name\",
+      \"id\": \"$id\",
+      \"romtype\": \"$romtype\",
+      \"size\": $file_size,
+      \"url\": \"$rel_link\",
+      \"version\": \"$version\",
+      \"device_name\": \"$device\",
+      \"maintainer\": \"$maintainer\"
+    }
+  ]
+}" >device/$codename.json
+  echo "[✓] Done"
+else
+  echo "Editing json file"
+  # date time
+  timestamp_old=$(cat device/$codename.json | grep "datetime" | cut -d':' -f2 | cut -d',' -f1)
+  $(sed -i "s|$timestamp_old|$timestamp|g" device/$codename.json)
+
+  # file name
+  file_name_old=$(cat device/$codename.json | grep "filename" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$file_name_old|$file_name|g" device/$codename.json)
+
+  # id
+  id=$(sha256sum $zip_path | cut -d' ' -f1)
+  id_old=$(cat device/$codename.json | grep "id" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$id_old|$id|g" device/$codename.json)
+
+  # Rom type
+  romtype_old=$(cat device/$codename.json | grep "romtype" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$romtype_old|$romtype|g" device/$codename.json)
+
+  # Rom size
+  size_old=$(cat device/$codename.json | grep "size" | cut -d':' -f2 | cut -d',' -f1)
+  $(sed -i "s|$size_old|$file_size|g" device/$codename.json)
+
+  # Rom version
+  version_old=$(cat device/$codename.json | grep "version" | cut -d':' -f2 | cut -d'"' -f2)
+  $(sed -i "s|$version_old|$version|g" device/$codename.json)
+
+  # url
+  link_old=$(cat device/$codename.json | grep https | cut -d '"' -f4)
+  $(sed -i "s|$link_old|$rel_link|g" device/$codename.json)
+  echo "[✓] Done"
+fi
