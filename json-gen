@@ -83,12 +83,12 @@ file_size=$(stat -c%s $zip_file)
 build_date="$(date +'%d-%m-%Y')"
 timestamp=$(cat $outdir/system/build.prop | grep ro.build.date.utc | cut -d'=' -f2)
 id=$(sha256sum $zip_file | awk '{ print $1 }')
-romtype="COMMUNITY"
+romtype="OFFICIAL"
 org="Fortune-OS"
-rel_repo="official-keepers"
+rel_repo="fortune-keepers"
 rel_tag="$(date "+%d%m%Y")"
 rel_link="https://github.com/$org/$rel_repo/releases/download/$rel_tag/$file_name"
-version="14"
+version="unity"
 if [ ! -f device/$codename.json ]; then
   echo "[x] No json file found, creating one"
   echo "[•] Creating json file for $device"

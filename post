@@ -24,7 +24,7 @@ message() {
 }
 
 device="$1"
-wget https://raw.githubusercontent.com/Fortune-OS/official-keepers/14/device/$device.json
+wget https://raw.githubusercontent.com/Fortune-OS/fortune-keepers/unity/device/$device.json
 device_name=$(grep -o '"device_name": "[^"]*' $device.json | grep -o '[^"]*$')
 filename=$(grep -o '"filename": "[^"]*' $device.json | grep -o '[^"]*$')
 link="https://www.pling.com/p/2066862"
